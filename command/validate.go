@@ -89,7 +89,10 @@ func (c *ValidateCommand) RunContext(ctx context.Context, cla *ValidateArgs) int
 	var rawTemplateData map[string]interface{}
 	input := make(map[string]interface{})
 	templateData := make(map[string]interface{})
-	json.Unmarshal(core.Template.RawContents, &rawTemplateData)
+	if err := json.Unmarshal(core.Template.RawContents, &rawTemplateData); err != nil {
+		c.Ui.Error(fmt.Sprintf("unable to read the contents of the JSON configuration file: %s", err))
+	}
+
 	for k, v := range rawTemplateData {
 		if vals, ok := v.([]interface{}); ok {
 			if len(vals) == 0 {
